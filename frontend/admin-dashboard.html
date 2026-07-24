@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - PlacementConnect</title>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --primary-hover: #1e293b;
+            --bg-color: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --accent: #3b82f6;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f1f5f9;
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--primary-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid white;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+        
+        .btn-delete {
+            background: var(--danger);
+            border: none;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+        
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            border-left: 4px solid var(--accent);
+            transition: transform 0.2s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .metric-title {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-top: 0.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .data-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        
+        tr:hover td {
+            background: #f1f5f9;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="logo">PlacementConnect Admin</a>
+        <button class="btn-outline" onclick="logout()">Logout</button>
+    </nav>
+
+    <div class="container">
+        <!-- Data Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('students')">Students</button>
+            <button class="tab-btn" onclick="switchTab('companies')">Companies</button>
+            <button class="tab-btn" onclick="switchTab('jobs')">Job Drives</button>
+            <button class="tab-btn" onclick="switchTab('applications')">Applications</button>
+            <button class="tab-btn" onclick="switchTab('reports')">Placement Reports</button>
+        </div>
+
+        <!-- Dashboard Metrics Section -->
+        <div class="data-card" id="dashboardSection">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Total Students</div>
+                    <div class="metric-value" id="metricStudents">0</div>
+                </div>
+                <div class="metric-card" style="border-left-color: #10b981;">
+                    <div class="metric-title">Total Companies</div>
+                    <div class="metric-value" id="metricCompanies">0</div>
+                </div>
+                <div class="metric-card" style="border-left-color: #8b5cf6;">
+                    <div class="metric-title">Job Postings</div>
+                    <div class="metric-value" id="metricJobs">0</div>
+                </div>
+                <div class="metric-card" style="border-left-color: #f59e0b;">
+                    <div class="metric-title">Applications</div>
+                    <div class="metric-value" id="metricApplications">0</div>
+                </div>
+                <div class="metric-card" style="border-left-color: #06b6d4;">
+                    <div class="metric-title">Placed Students</div>
+                    <div class="metric-value" id="metricPlaced">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-card hidden" id="studentsSection">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Roll No</th>
+                        <th>Department</th>
+                        <th>CGPA</th>
+                        <th>Grad Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                    <!-- Loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="data-card hidden" id="companiesSection">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Company Name</th>
+                        <th>Industry</th>
+                        <th>Website</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="companiesTableBody">
+                    <!-- Loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="data-card hidden" id="jobsSection">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Min CGPA</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="jobsTableBody">
+                    <!-- Loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="data-card hidden" id="applicationsSection">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student</th>
+                        <th>Company</th>
+                        <th>Job Title</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="applicationsTableBody">
+                    <!-- Loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="data-card hidden" id="reportsSection">
+            <h2 style="margin-top: 0; color: var(--primary-color);">Placement Analytics</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-top: 0; color: var(--text-main); font-size: 1.1rem; border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; display: inline-block;">Placement Summary</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                        <div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Total Placed Students</div>
+                            <div style="font-size: 2rem; font-weight: bold; color: #10b981;" id="reportPlaced">0</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Total Unplaced Students</div>
+                            <div style="font-size: 2rem; font-weight: bold; color: #ef4444;" id="reportUnplaced">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-top: 0; color: var(--text-main); font-size: 1.1rem; border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; display: inline-block;">Application Status Distribution</h3>
+                    <div style="margin-top: 1rem;" id="statusDistributionContainer">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin-dashboard.js"></script>
+</body>
+</html>
