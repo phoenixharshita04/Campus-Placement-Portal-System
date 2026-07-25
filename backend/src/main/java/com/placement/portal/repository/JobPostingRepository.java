@@ -9,7 +9,8 @@ import java.util.List;
 
 @Repository
 public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
-    List<JobPosting> findByStatusAndMinCgpaLessThanEqual(String status, Double cgpa);
+    List<JobPosting> findByStatus(String status);
+    List<JobPosting> findByCompanyProfileId(Long companyProfileId);
 
     @Transactional
     void deleteByCompanyProfileId(Long companyProfileId);

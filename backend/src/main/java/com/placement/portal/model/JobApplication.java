@@ -26,6 +26,18 @@ public class JobApplication {
     @Column(name = "applied_date", nullable = false)
     private LocalDate applicationDate = LocalDate.now();
 
+    @Column(columnDefinition = "TEXT")
+    private String interviewDetails;
+
+    @Column(columnDefinition = "TEXT")
+    private String offerLetterUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String assessmentLink;
+
+    @Column(columnDefinition = "TEXT")
+    private String interviewLink;
+
     public JobApplication() {}
 
     public Long getId() { return id; }
@@ -38,4 +50,16 @@ public class JobApplication {
     public void setStatus(ApplicationStatus status) { this.status = status; }
     public LocalDate getApplicationDate() { return applicationDate; }
     public void setApplicationDate(LocalDate applicationDate) { this.applicationDate = applicationDate; }
+
+    public String getInterviewDetails() { return interviewDetails; }
+    public void setInterviewDetails(String interviewDetails) { this.interviewDetails = interviewDetails; }
+
+    public String getOfferLetterUrl() { return offerLetterUrl; }
+    public void setOfferLetterUrl(String offerLetterUrl) { this.offerLetterUrl = offerLetterUrl; }
+
+    public String getAssessmentLink() { return assessmentLink; }
+    public void setAssessmentLink(String assessmentLink) { this.assessmentLink = assessmentLink; }
+
+    public String getInterviewLink() { return interviewLink; }
+    public void setInterviewLink(String interviewLink) { this.interviewLink = interviewLink; }
 }

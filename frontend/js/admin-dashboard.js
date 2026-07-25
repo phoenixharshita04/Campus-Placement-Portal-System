@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadJobs();
     loadApplications();
     loadReports();
+    loadActivityLogs();
 });
 
 function logout() {
@@ -134,12 +135,24 @@ async function loadJobs() {
                 return;
             }
             
-            jobs.forEach(j => {
+            const locationFilter = document.getElementById('adminJobLocationFilter') ? document.getElementById('adminJobLocationFilter').value.toLowerCase() : '';
+            let filteredJobs = jobs;
+            if (locationFilter) {
+                filteredJobs = jobs.filter(j => (j.location || '').toLowerCase().includes(locationFilter));
+            }
+            
+            if (filteredJobs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No job drives match the filter</td></tr>';
+                return;
+            }
+            
+            filteredJobs.forEach(j => {
                 tbody.innerHTML += `
                     <tr>
                         <td>#${j.id}</td>
                         <td>${j.jobTitle}</td>
                         <td>${j.companyName}</td>
+                        <td>${j.location || '-'}</td>
                         <td>${j.minCgpa}</td>
                         <td><span class="badge" style="background:#e0e7ff;color:#4f46e5">${j.status}</span></td>
                         <td>
@@ -163,30 +176,65 @@ async function loadApplications() {
             tbody.innerHTML = '';
             
             if (apps.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No applications submitted</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No applications submitted</td></tr>';
                 return;
             }
             
             apps.forEach(a => {
-                const date = new Date(a.applied_date).toLocaleDateString();
+                const date = new Date(a.applied_date || a.applicationDate).toLocaleDateString();
                 const studentName = a.studentProfile ? a.studentProfile.name : 'Unknown';
                 const companyName = a.jobPosting ? a.jobPosting.companyName : 'Unknown';
                 const jobTitle = a.jobPosting ? a.jobPosting.jobTitle : 'Unknown';
                 
+                const resumeUrl = a.studentProfile ? (a.studentProfile.resume || a.studentProfile.resumeLink) : null;
+                const resumeHtml = resumeUrl ? `<a href="${resumeUrl}" target="_blank" style="color:var(--primary-color); text-decoration:underline;">View</a>` : '-';
+                
                 tbody.innerHTML += `
                     <tr>
-                        <td>#${a.application_id}</td>
+                        <td>#${a.application_id || a.id}</td>
                         <td>${studentName}</td>
                         <td>${companyName}</td>
                         <td>${jobTitle}</td>
                         <td><span class="badge" style="background:${getStatusColor(a.status)}">${a.status}</span></td>
                         <td>${date}</td>
+                        <td>${resumeHtml}</td>
                     </tr>
                 `;
             });
         }
     } catch (err) {
         console.error("Failed to load applications", err);
+    }
+}
+
+async function loadActivityLogs() {
+    try {
+        const res = await fetchWithAuth('/admin/audit-logs');
+        if (res.ok) {
+            const logs = await res.json();
+            const tbody = document.getElementById('activityLogsTableBody');
+            tbody.innerHTML = '';
+            
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No activity logs found</td></tr>';
+                return;
+            }
+            
+            logs.forEach(log => {
+                const date = new Date(log.timestamp).toLocaleString();
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${log.id}</td>
+                        <td><span class="badge" style="background:#e2e8f0; color:var(--primary-color)">${log.action}</span></td>
+                        <td>${log.performedBy}</td>
+                        <td>${date}</td>
+                        <td>${log.details}</td>
+                    </tr>
+                `;
+            });
+        }
+    } catch (err) {
+        console.error("Failed to load activity logs", err);
     }
 }
 
@@ -207,6 +255,9 @@ function formatStatus(status) {
     return status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
 }
 
+let statusChartInstance = null;
+let branchChartInstance = null;
+
 async function loadReports() {
     try {
         const res = await fetchWithAuth('/admin/reports');
@@ -215,19 +266,50 @@ async function loadReports() {
             document.getElementById('reportPlaced').textContent = reports.totalPlacedStudents;
             document.getElementById('reportUnplaced').textContent = reports.totalUnplacedStudents;
             
-            const distContainer = document.getElementById('statusDistributionContainer');
-            distContainer.innerHTML = '';
-            
             if (reports.statusDistribution) {
-                for (const [status, count] of Object.entries(reports.statusDistribution)) {
-                    const color = getStatusColor(status);
-                    distContainer.innerHTML += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0;">
-                            <span class="badge" style="background:${color}">${formatStatus(status)}</span>
-                            <span style="font-weight: bold; color: var(--text-main);">${count}</span>
-                        </div>
-                    `;
-                }
+                const labels = Object.keys(reports.statusDistribution).map(formatStatus);
+                const data = Object.values(reports.statusDistribution);
+                const backgroundColors = Object.keys(reports.statusDistribution).map(getStatusColor);
+                
+                const ctx = document.getElementById('statusChart').getContext('2d');
+                if (statusChartInstance) statusChartInstance.destroy();
+                statusChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: backgroundColors
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+            
+            if (reports.branchPlacements) {
+                const labels = Object.keys(reports.branchPlacements);
+                const data = Object.values(reports.branchPlacements);
+                
+                const ctx2 = document.getElementById('branchChart').getContext('2d');
+                if (branchChartInstance) branchChartInstance.destroy();
+                branchChartInstance = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Placed Students',
+                            data: data,
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    }
+                });
             }
         }
     } catch (err) {
@@ -245,6 +327,41 @@ async function deleteStudent(id) {
                 loadMetrics();
             }
         } catch (err) { alert('Failed to delete student'); }
+    }
+}
+
+async function exportStudents(type) {
+    try {
+        const [studentsRes, appsRes] = await Promise.all([
+            fetchWithAuth('/admin/students'),
+            fetchWithAuth('/admin/applications')
+        ]);
+        const students = await studentsRes.json();
+        const apps = await appsRes.json();
+        
+        const placedStudentIds = new Set(apps.filter(a => a.status === 'SELECTED').map(a => (a.studentProfile && a.studentProfile.student_id) || (a.studentProfile && a.studentProfile.id)));
+        
+        let filteredStudents = students;
+        if (type === 'placed') {
+            filteredStudents = students.filter(s => placedStudentIds.has(s.student_id || s.id));
+        } else if (type === 'unplaced') {
+            filteredStudents = students.filter(s => !placedStudentIds.has(s.student_id || s.id));
+        }
+        
+        let csv = 'ID,Name,Roll No,Department,CGPA,Grad Year\n';
+        filteredStudents.forEach(s => {
+            csv += `${s.id || s.student_id},"${s.name}","${s.rollNo}","${s.branch || s.department}",${s.cgpa},${s.graduationYear}\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${type}_students.csv`;
+        a.click();
+    } catch (err) {
+        console.error("Export failed", err);
+        alert("Export failed");
     }
 }
 
@@ -280,11 +397,13 @@ function switchTab(tabId) {
     event.target.classList.add('active');
 
     // Hide all sections including dashboard
-    const sections = ['dashboardSection', 'studentsSection', 'companiesSection', 'jobsSection', 'applicationsSection', 'reportsSection'];
+    const sections = ['dashboardSection', 'studentsSection', 'companiesSection', 'jobsSection', 'applicationsSection', 'reportsSection', 'activityLogsSection'];
     sections.forEach(id => {
-        document.getElementById(id).classList.add('hidden');
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
     });
 
     // Show selected section
-    document.getElementById(tabId + 'Section').classList.remove('hidden');
+    const target = document.getElementById(tabId + 'Section');
+    if (target) target.classList.remove('hidden');
 }

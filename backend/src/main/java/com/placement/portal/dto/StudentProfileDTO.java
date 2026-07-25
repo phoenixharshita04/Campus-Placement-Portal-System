@@ -23,6 +23,12 @@ public class StudentProfileDTO {
     private String mobileNumber;
     
     private String skills;
+    private Boolean isOptedOut;
+    private String projects;
+    private String experience;
+    private String tenthMarksheetUrl;
+    private String twelfthMarksheetUrl;
+    private String aadharUrl;
 
     public StudentProfileDTO() {}
 
@@ -68,4 +74,16 @@ public class StudentProfileDTO {
     public void setMobileNumber(String mobileNumber) { this.mobileNumber = mobileNumber; }
     public String getSkills() { return skills; }
     public void setSkills(String skills) { this.skills = skills; }
+    public Boolean getIsOptedOut() { return isOptedOut; }
+    public void setIsOptedOut(Boolean isOptedOut) { this.isOptedOut = isOptedOut; }
+    public String getProjects() { return projects; }
+    public void setProjects(String projects) { this.projects = projects; }
+    public String getExperience() { return experience; }
+    public void setExperience(String experience) { this.experience = experience; }
+    public String getTenthMarksheetUrl() { return tenthMarksheetUrl; }
+    public void setTenthMarksheetUrl(String tenthMarksheetUrl) { this.tenthMarksheetUrl = tenthMarksheetUrl; }
+    public String getTwelfthMarksheetUrl() { return twelfthMarksheetUrl; }
+    public void setTwelfthMarksheetUrl(String twelfthMarksheetUrl) { this.twelfthMarksheetUrl = twelfthMarksheetUrl; }
+    public String getAadharUrl() { return aadharUrl; }
+    public void setAadharUrl(String aadharUrl) { this.aadharUrl = aadharUrl; }
 }

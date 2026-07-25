@@ -5,11 +5,14 @@ import com.placement.portal.model.CompanyProfile;
 import com.placement.portal.model.JobPosting;
 import com.placement.portal.model.JobApplication;
 import com.placement.portal.model.StudentProfile;
+import com.placement.portal.model.AuditLog;
 import com.placement.portal.repository.CompanyProfileRepository;
 import com.placement.portal.repository.JobApplicationRepository;
 import com.placement.portal.repository.JobPostingRepository;
 import com.placement.portal.repository.StudentProfileRepository;
 import com.placement.portal.repository.UserRepository;
+import com.placement.portal.service.AuditLogService;
+import com.placement.portal.repository.AuditLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +40,12 @@ public class AdminController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AuditLogService auditLogService;
+    
+    @Autowired
+    private AuditLogRepository auditLogRepository;
 
     @GetMapping("/metrics")
     public ResponseEntity<Map<String, Long>> getMetrics() {
@@ -70,6 +79,19 @@ public class AdminController {
         }
         reports.put("statusDistribution", statusDistribution);
         
+        List<JobApplication> allSelected = jobApplicationRepository.findAll().stream()
+                .filter(a -> a.getStatus() == ApplicationStatus.SELECTED)
+                .toList();
+                
+        Map<String, Long> branchPlacements = new HashMap<>();
+        for (JobApplication app : allSelected) {
+            String branch = app.getStudentProfile().getDepartment();
+            if (branch != null) {
+                branchPlacements.put(branch, branchPlacements.getOrDefault(branch, 0L) + 1);
+            }
+        }
+        reports.put("branchPlacements", branchPlacements);
+        
         return ResponseEntity.ok(reports);
     }
 
@@ -88,6 +110,7 @@ public class AdminController {
             if (student.getUser() != null) {
                 userRepository.delete(student.getUser());
             }
+            auditLogService.logAction("DELETE_STUDENT", "Admin", "Deleted student ID: " + id);
             return ResponseEntity.ok("Student deleted successfully");
         }
         return ResponseEntity.notFound().build();
@@ -117,6 +140,7 @@ public class AdminController {
             if (company.getUser() != null) {
                 userRepository.delete(company.getUser());
             }
+            auditLogService.logAction("DELETE_COMPANY", "Admin", "Deleted company ID: " + id);
             return ResponseEntity.ok("Company deleted successfully");
         }
         return ResponseEntity.notFound().build();
@@ -132,6 +156,7 @@ public class AdminController {
         if (jobPostingRepository.existsById(id)) {
             jobApplicationRepository.deleteByJobPostingId(id);
             jobPostingRepository.deleteById(id);
+            auditLogService.logAction("DELETE_JOB", "Admin", "Deleted job ID: " + id);
             return ResponseEntity.ok("Job deleted successfully");
         }
         return ResponseEntity.notFound().build();
@@ -140,5 +165,10 @@ public class AdminController {
     @GetMapping("/applications")
     public ResponseEntity<List<JobApplication>> getAllApplications() {
         return ResponseEntity.ok(jobApplicationRepository.findAll());
+    }
+    
+    @GetMapping("/audit-logs")
+    public ResponseEntity<List<AuditLog>> getAuditLogs() {
+        return ResponseEntity.ok(auditLogRepository.findAllByOrderByTimestampDesc());
     }
 }

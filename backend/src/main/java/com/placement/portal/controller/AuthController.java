@@ -58,7 +58,7 @@ public class AuthController {
         
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
 
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, user.getRole().name()));
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, user.getRole().name(), user.getId()));
     }
 
     @PostMapping("/register")
@@ -78,6 +78,10 @@ public class AuthController {
 
         if (userRole == Role.STUDENT && registerRequest.getRollNo() != null && studentProfileRepository.existsByRollNo(registerRequest.getRollNo())) {
             return ResponseEntity.badRequest().body("Error: Roll Number is already in use!");
+        }
+
+        if (userRole == Role.STUDENT && registerRequest.getCgpa() != null && registerRequest.getCgpa() < 6.0) {
+            return ResponseEntity.badRequest().body("Error: Minimum CGPA allowed is 6.0");
         }
 
         // Creating user's account

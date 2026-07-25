@@ -15,6 +15,8 @@ public class JobApplicationDTO {
     
     @JsonProperty("applied_date")
     private LocalDate applicationDate;
+    private String interviewDetails;
+    private String offerLetterUrl;
 
     public JobApplicationDTO() {}
     
@@ -24,6 +26,16 @@ public class JobApplicationDTO {
         this.studentProfile = studentProfile;
         this.status = status;
         this.applicationDate = applicationDate;
+    }
+
+    public JobApplicationDTO(Long id, JobPostingDTO jobPosting, StudentProfileDTO studentProfile, ApplicationStatus status, LocalDate applicationDate, String interviewDetails, String offerLetterUrl) {
+        this.id = id;
+        this.jobPosting = jobPosting;
+        this.studentProfile = studentProfile;
+        this.status = status;
+        this.applicationDate = applicationDate;
+        this.interviewDetails = interviewDetails;
+        this.offerLetterUrl = offerLetterUrl;
     }
 
     public Long getId() { return id; }
@@ -36,4 +48,10 @@ public class JobApplicationDTO {
     public void setStatus(ApplicationStatus status) { this.status = status; }
     public LocalDate getApplicationDate() { return applicationDate; }
     public void setApplicationDate(LocalDate applicationDate) { this.applicationDate = applicationDate; }
+    
+    public String getInterviewDetails() { return interviewDetails; }
+    public void setInterviewDetails(String interviewDetails) { this.interviewDetails = interviewDetails; }
+    
+    public String getOfferLetterUrl() { return offerLetterUrl; }
+    public void setOfferLetterUrl(String offerLetterUrl) { this.offerLetterUrl = offerLetterUrl; }
 }

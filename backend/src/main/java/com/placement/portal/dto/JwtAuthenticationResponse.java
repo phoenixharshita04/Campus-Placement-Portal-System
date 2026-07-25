@@ -4,11 +4,16 @@ public class JwtAuthenticationResponse {
     private String accessToken;
     private String tokenType = "Bearer";
     private String role;
+    private Long userId;
 
-    public JwtAuthenticationResponse(String accessToken, String role) {
+    public JwtAuthenticationResponse(String accessToken, String role, Long userId) {
         this.accessToken = accessToken;
         this.role = role;
+        this.userId = userId;
     }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
     public String getAccessToken() { return accessToken; }
     public void setAccessToken(String accessToken) { this.accessToken = accessToken; }

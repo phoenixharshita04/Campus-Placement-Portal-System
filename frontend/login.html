@@ -101,12 +101,25 @@
                         </div>
                         <div class="form-group">
                             <label>Department</label>
-                            <input type="text" id="regDept" class="form-control">
+                            <select id="regDept" class="form-control" required>
+                                <option value="" disabled selected>Select Branch</option>
+                                <option value="CSE">Computer Science & Engineering (CSE)</option>
+                                <option value="IT">Information Technology (IT)</option>
+                                <option value="ECE">Electronics & Communication Engineering (ECE)</option>
+                                <option value="EEE">Electrical & Electronics Engineering (EEE)</option>
+                                <option value="ME">Mechanical Engineering (ME)</option>
+                                <option value="CE">Civil Engineering (CE)</option>
+                                <option value="CHE">Chemical Engineering (CHE)</option>
+                                <option value="AE">Aerospace Engineering (AE)</option>
+                                <option value="AI & DS">Artificial Intelligence & Data Science (AI & DS)</option>
+                                <option value="MTE">Mechatronics & Automation (MTE)</option>
+                                <option value="BT">Biotechnology (BT)</option>
+                            </select>
                         </div>
                         <div class="form-group" style="display: flex; gap: 10px;">
                             <div style="flex: 1;">
                                 <label>CGPA</label>
-                                <input type="number" id="regCgpa" class="form-control" step="0.01" min="0" max="10">
+                                <input type="number" id="regCgpa" class="form-control" step="0.01" min="6.0" max="10">
                             </div>
                             <div style="flex: 1;">
                                 <label>Grad Year</label>

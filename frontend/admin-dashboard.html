@@ -197,6 +197,7 @@
             <button class="tab-btn" onclick="switchTab('jobs')">Job Drives</button>
             <button class="tab-btn" onclick="switchTab('applications')">Applications</button>
             <button class="tab-btn" onclick="switchTab('reports')">Placement Reports</button>
+            <button class="tab-btn" onclick="switchTab('activityLogs')">Activity Logs</button>
         </div>
 
         <!-- Dashboard Metrics Section -->
@@ -226,6 +227,13 @@
         </div>
 
         <div class="data-card hidden" id="studentsSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="margin: 0;">Students</h2>
+                <div>
+                    <button class="btn-outline" style="color: var(--primary-color); border-color: var(--primary-color);" onclick="exportStudents('placed')">Export Placed (CSV)</button>
+                    <button class="btn-outline" style="color: var(--primary-color); border-color: var(--primary-color); margin-left: 0.5rem;" onclick="exportStudents('unplaced')">Export Unplaced (CSV)</button>
+                </div>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -262,12 +270,19 @@
         </div>
 
         <div class="data-card hidden" id="jobsSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="margin: 0;">Job Drives</h2>
+                <div>
+                    <input type="text" id="adminJobLocationFilter" class="form-control" placeholder="Filter by Location" style="min-width: 200px; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" onkeyup="loadJobs()">
+                </div>
+            </div>
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Job Title</th>
                         <th>Company</th>
+                        <th>Location</th>
                         <th>Min CGPA</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -289,6 +304,7 @@
                         <th>Job Title</th>
                         <th>Status</th>
                         <th>Date</th>
+                        <th>Resume</th>
                     </tr>
                 </thead>
                 <tbody id="applicationsTableBody">
@@ -313,18 +329,57 @@
                             <div style="font-size: 2rem; font-weight: bold; color: #ef4444;" id="reportUnplaced">0</div>
                         </div>
                     </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                        <div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Highest Package</div>
+                            <div style="font-size: 1.75rem; font-weight: bold; color: var(--primary-color);" id="reportHighest">50 LPA</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Average Package</div>
+                            <div style="font-size: 1.75rem; font-weight: bold; color: #f59e0b;" id="reportAverage">8 LPA</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
                     <h3 style="margin-top: 0; color: var(--text-main); font-size: 1.1rem; border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; display: inline-block;">Application Status Distribution</h3>
                     <div style="margin-top: 1rem;" id="statusDistributionContainer">
-                        <!-- Loaded dynamically -->
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; grid-column: 1 / -1;">
+                    <h3 style="margin-top: 0; color: var(--text-main); font-size: 1.1rem; border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; display: inline-block;">Placement by Branch</h3>
+                    <div style="margin-top: 1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        <canvas id="branchChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Activity Logs Section -->
+        <div class="data-card hidden" id="activityLogsSection">
+            <h2 style="margin-top: 0; color: var(--primary-color);">System Audit Logs</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Log ID</th>
+                            <th>Action</th>
+                            <th>Performed By</th>
+                            <th>Date & Time</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityLogsTableBody">
+                        <tr><td colspan="5" style="text-align: center;">Loading logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/admin-dashboard.js"></script>
 </body>
 </html>

@@ -12,6 +12,13 @@ public class JobPostingDTO {
     private String requiredSkills;
     private String eligibilityCriteria;
     private String lastDateToApply;
+    private String ctcComponents;
+    private String selectionRounds;
+    private String bondDetails;
+    private String eligibleBranches = "ALL";
+    private String testPlatform;
+    private String testDatetime;
+    private String testLink;
 
     public JobPostingDTO() {}
 
@@ -38,6 +45,27 @@ public class JobPostingDTO {
         this.lastDateToApply = lastDateToApply;
     }
     
+    public JobPostingDTO(Long id, String companyName, String jobTitle, String description, Double minCgpa, String status, String location, String salaryPackage, String requiredSkills, String eligibilityCriteria, String lastDateToApply, String ctcComponents, String selectionRounds, String bondDetails, String eligibleBranches, String testPlatform, String testDatetime, String testLink) {
+        this.id = id;
+        this.companyName = companyName;
+        this.jobTitle = jobTitle;
+        this.description = description;
+        this.minCgpa = minCgpa;
+        this.status = status;
+        this.location = location;
+        this.salaryPackage = salaryPackage;
+        this.requiredSkills = requiredSkills;
+        this.eligibilityCriteria = eligibilityCriteria;
+        this.lastDateToApply = lastDateToApply;
+        this.ctcComponents = ctcComponents;
+        this.selectionRounds = selectionRounds;
+        this.bondDetails = bondDetails;
+        this.eligibleBranches = eligibleBranches;
+        this.testPlatform = testPlatform;
+        this.testDatetime = testDatetime;
+        this.testLink = testLink;
+    }
+    
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getCompanyName() { return companyName; }
@@ -61,4 +89,25 @@ public class JobPostingDTO {
     public void setEligibilityCriteria(String eligibilityCriteria) { this.eligibilityCriteria = eligibilityCriteria; }
     public String getLastDateToApply() { return lastDateToApply; }
     public void setLastDateToApply(String lastDateToApply) { this.lastDateToApply = lastDateToApply; }
+    
+    public String getCtcComponents() { return ctcComponents; }
+    public void setCtcComponents(String ctcComponents) { this.ctcComponents = ctcComponents; }
+    
+    public String getSelectionRounds() { return selectionRounds; }
+    public void setSelectionRounds(String selectionRounds) { this.selectionRounds = selectionRounds; }
+    
+    public String getBondDetails() { return bondDetails; }
+    public void setBondDetails(String bondDetails) { this.bondDetails = bondDetails; }
+    
+    public String getEligibleBranches() { return eligibleBranches; }
+    public void setEligibleBranches(String eligibleBranches) { this.eligibleBranches = eligibleBranches; }
+
+    public String getTestPlatform() { return testPlatform; }
+    public void setTestPlatform(String testPlatform) { this.testPlatform = testPlatform; }
+    
+    public String getTestDatetime() { return testDatetime; }
+    public void setTestDatetime(String testDatetime) { this.testDatetime = testDatetime; }
+    
+    public String getTestLink() { return testLink; }
+    public void setTestLink(String testLink) { this.testLink = testLink; }
 }

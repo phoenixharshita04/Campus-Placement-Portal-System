@@ -16,19 +16,24 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Sidebar Navigation Logic
     document.querySelectorAll('.sidebar-item').forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function(e) {
             document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
             this.classList.add('active');
             
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
             const target = this.getAttribute('data-target');
             document.getElementById(target).classList.add('active');
+
+            if (target === 'reportsSection') {
+                loadCompanyReports();
+            }
         });
     });
 
     document.getElementById('profileForm').addEventListener('submit', handleProfileUpdate);
     document.getElementById('jobForm').addEventListener('submit', handleJobPost);
     document.getElementById('editJobForm').addEventListener('submit', handleJobEdit);
+    document.getElementById('generateSlotsForm').addEventListener('submit', handleGenerateSlots);
 });
 
 function logout() {
@@ -62,7 +67,17 @@ async function loadCompanyProfile() {
             document.getElementById('userNameDisplay').textContent = profile.company_name || 'Company User';
             document.getElementById('companyName').value = profile.company_name || '';
             document.getElementById('companyEmail').value = profile.email || '';
-            document.getElementById('contactNumber').value = profile.contactNumber || '';
+            if (profile.contactNumber) {
+                let parts = profile.contactNumber.split(' ');
+                if (parts.length > 1 && parts[0].startsWith('+')) {
+                    document.getElementById('countryCode').value = parts[0];
+                    document.getElementById('contactNumber').value = parts.slice(1).join(' ');
+                } else {
+                    document.getElementById('contactNumber').value = profile.contactNumber;
+                }
+            } else {
+                document.getElementById('contactNumber').value = '';
+            }
             document.getElementById('website').value = profile.website || '';
             document.getElementById('industry').value = profile.industry || '';
             document.getElementById('description').value = profile.description || '';
@@ -76,7 +91,7 @@ async function handleProfileUpdate(e) {
     e.preventDefault();
     const profileData = {
         company_name: document.getElementById('companyName').value,
-        contactNumber: document.getElementById('contactNumber').value,
+        contactNumber: document.getElementById('countryCode').value + ' ' + document.getElementById('contactNumber').value,
         website: document.getElementById('website').value,
         industry: document.getElementById('industry').value,
         description: document.getElementById('description').value
@@ -107,7 +122,14 @@ async function handleJobPost(e) {
         salaryPackage: document.getElementById('jobSalary').value,
         requiredSkills: document.getElementById('jobSkills').value,
         eligibilityCriteria: document.getElementById('jobEligibility').value,
-        lastDateToApply: document.getElementById('jobLastDate').value
+        lastDateToApply: document.getElementById('jobLastDate').value,
+        ctcComponents: document.getElementById('jobCtcComponents').value,
+        selectionRounds: document.getElementById('jobSelectionRounds').value,
+        bondDetails: document.getElementById('jobBondDetails').value,
+        eligibleBranches: Array.from(document.querySelectorAll('#jobBranches input:checked')).map(cb => cb.value).join(','),
+        testPlatform: document.getElementById('jobTestPlatform').value,
+        testDatetime: document.getElementById('jobTestDatetime').value,
+        testLink: document.getElementById('jobTestLink').value
     };
 
     try {
@@ -150,8 +172,9 @@ async function loadMyJobs() {
                         <span class="badge">${job.status}</span>
                     </div>
                     <p style="margin: 0.5rem 0; font-size: 0.9rem;">Min CGPA: ${job.minCgpa}</p>
-                    <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                    <div style="display: flex; gap: 10px; margin-top: 1rem; flex-wrap: wrap;">
                         <button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" onclick="viewApplicants(${job.id}, '${job.jobTitle}')">View Applicants</button>
+                        <button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" onclick="openGenerateSlotsModal(${job.id})">Generate Slots</button>
                         <button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" onclick="openEditJobModal(${job.id})">
                             Edit
                         </button>
@@ -181,6 +204,22 @@ function openEditJobModal(jobId) {
     document.getElementById('editJobSkills').value = job.requiredSkills || '';
     document.getElementById('editJobEligibility').value = job.eligibilityCriteria || '';
     document.getElementById('editJobLastDate').value = job.lastDateToApply || '';
+    document.getElementById('editJobTestPlatform').value = job.testPlatform || '';
+    
+    // Format datetime-local input properly if value exists
+    if (job.testDatetime) {
+        document.getElementById('editJobTestDatetime').value = job.testDatetime.substring(0, 16);
+    } else {
+        document.getElementById('editJobTestDatetime').value = '';
+    }
+    
+    document.getElementById('editJobTestLink').value = job.testLink || '';
+    
+    // Check branches
+    const branches = (job.eligibleBranches || 'ALL').split(',');
+    document.querySelectorAll('#editJobBranches input').forEach(cb => {
+        cb.checked = branches.includes('ALL') || branches.includes(cb.value);
+    });
     
     document.getElementById('editJobModal').style.display = 'flex';
 }
@@ -200,7 +239,11 @@ async function handleJobEdit(e) {
         salaryPackage: document.getElementById('editJobSalary').value,
         requiredSkills: document.getElementById('editJobSkills').value,
         eligibilityCriteria: document.getElementById('editJobEligibility').value,
-        lastDateToApply: document.getElementById('editJobLastDate').value
+        lastDateToApply: document.getElementById('editJobLastDate').value,
+        eligibleBranches: Array.from(document.querySelectorAll('#editJobBranches input:checked')).map(cb => cb.value).join(','),
+        testPlatform: document.getElementById('editJobTestPlatform').value,
+        testDatetime: document.getElementById('editJobTestDatetime').value,
+        testLink: document.getElementById('editJobTestLink').value
     };
 
     try {
@@ -242,7 +285,44 @@ async function deleteJob(jobId) {
     }
 }
 
+function openGenerateSlotsModal(jobId) {
+    document.getElementById('slotsJobId').value = jobId;
+    document.getElementById('generateSlotsModal').style.display = 'flex';
+}
+
+function closeGenerateSlotsModal() {
+    document.getElementById('generateSlotsModal').style.display = 'none';
+}
+
+async function handleGenerateSlots(e) {
+    e.preventDefault();
+    const jobId = document.getElementById('slotsJobId').value;
+    const payload = {
+        startTime: document.getElementById('slotsStartTime').value,
+        slotCount: document.getElementById('slotsCount').value,
+        durationMinutes: document.getElementById('slotsDuration').value
+    };
+    
+    try {
+        const res = await fetchWithAuth(`/companies/jobs/${jobId}/slots`, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        
+        if (res.ok) {
+            alert('Slots generated successfully!');
+            closeGenerateSlotsModal();
+            document.getElementById('generateSlotsForm').reset();
+        } else {
+            alert('Failed to generate slots');
+        }
+    } catch (error) {
+        alert('Error generating slots');
+    }
+}
+
 let currentJobId = null;
+let currentApplications = [];
 
 async function viewApplicants(jobId, jobTitle) {
     currentJobId = jobId;
@@ -257,29 +337,33 @@ async function viewApplicants(jobId, jobTitle) {
     try {
         const res = await fetchWithAuth(`/companies/jobs/${jobId}/applications`);
         if (res.ok) {
-            const applications = await res.json();
+            currentApplications = await res.json();
+            const applications = currentApplications;
             const tbody = document.getElementById('applicationsTableBody');
             tbody.innerHTML = '';
             
             if (applications.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No applications yet</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No applications yet</td></tr>';
                 return;
             }
             
             applications.forEach(app => {
                 const date = new Date(app.applied_date).toLocaleDateString();
                 const student = app.studentProfile;
+                const resumeUrl = student.resume || student.resumeLink;
+                const resumeHtml = resumeUrl ? `<a href="${resumeUrl}" target="_blank" style="color:var(--primary-color); text-decoration:underline;">View Resume</a>` : 'N/A';
                 
                 tbody.innerHTML += `
                     <tr>
                         <td>${student.name}</td>
                         <td>${student.rollNo}</td>
-                        <td>${student.branch}</td>
+                        <td>${student.branch || student.department}</td>
                         <td>${student.cgpa}</td>
                         <td>${date}</td>
                         <td>
                             <span class="badge" style="background:${getStatusColor(app.status)}">${formatStatus(app.status)}</span>
                         </td>
+                        <td>${resumeHtml}</td>
                         <td>
                             <select class="status-select" onchange="updateStatus(${app.application_id}, this.value)">
                                 <option value="" disabled selected>Update Status</option>
@@ -298,6 +382,26 @@ async function viewApplicants(jobId, jobTitle) {
         console.error(error);
         alert('Failed to load applications');
     }
+}
+
+async function exportApplicants() {
+    if (!currentApplications || currentApplications.length === 0) {
+        alert("No applicants to export.");
+        return;
+    }
+    
+    let csv = 'Student Name,Roll No,Branch,CGPA,Email,Phone,Application Status\n';
+    currentApplications.forEach(app => {
+        const s = app.studentProfile;
+        csv += `"${s.name}","${s.rollNo}","${s.branch || s.department}",${s.cgpa},"${s.email || ''}","${s.mobileNumber || ''}","${app.status}"\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Applicants_${currentJobId}.csv`;
+    a.click();
 }
 
 function getStatusColor(status) {
@@ -320,15 +424,40 @@ function formatStatus(status) {
 async function updateStatus(appId, newStatus) {
     if (!newStatus) return;
     
+    let interviewDetails = null;
+    let offerLetterUrl = null;
+    let assessmentLink = null;
+    let interviewLink = null;
+
+    if (newStatus === 'SHORTLISTED') {
+        assessmentLink = prompt("Optional: Enter Assessment Link (e.g., HackerRank/Unstop) or leave blank:");
+    } else if (newStatus === 'INTERVIEW_SCHEDULED') {
+        interviewDetails = prompt("Please enter interview details (Date, Time, Format):", "E.g., Oct 25th 10AM");
+        if (interviewDetails === null) return; // User cancelled
+        interviewLink = prompt("Optional: Enter Live Meeting Link (e.g., Google Meet / Zoom) or leave blank:");
+    } else if (newStatus === 'SELECTED') {
+        offerLetterUrl = prompt("Please enter a link to the Offer Letter (PDF URL):", "https://...");
+        if (offerLetterUrl === null) return; // User cancelled
+    }
+    
     try {
+        const payload = {
+            status: newStatus,
+            interviewDetails: interviewDetails,
+            offerLetterUrl: offerLetterUrl,
+            assessmentLink: assessmentLink,
+            interviewLink: interviewLink
+        };
+
         const res = await fetchWithAuth(`/companies/applications/${appId}/status`, {
             method: 'PUT',
-            body: JSON.stringify(newStatus)
+            body: JSON.stringify(payload)
         });
         
         if (res.ok) {
             // Refresh list
-            viewApplications(currentJobId);
+            const title = document.getElementById('applicantsJobTitle').textContent.replace('Applicants for: ', '');
+            viewApplicants(currentJobId, title);
         }
     } catch(err) {
         alert("Failed to update status");
@@ -337,4 +466,41 @@ async function updateStatus(appId, newStatus) {
 
 function closeModal() {
     document.getElementById('applicationsModal').style.display = 'none';
+}
+
+let companyStatusChartInstance = null;
+
+async function loadCompanyReports() {
+    try {
+        const res = await fetchWithAuth('/companies/reports');
+        if (res.ok) {
+            const reports = await res.json();
+            document.getElementById('reportTotalJobs').textContent = reports.totalJobs;
+            document.getElementById('reportTotalApps').textContent = reports.totalApplications;
+            document.getElementById('reportTotalInterviews').textContent = reports.totalInterviews;
+            document.getElementById('reportTotalSelected').textContent = reports.totalSelected;
+            
+            if (reports.statusDistribution) {
+                const labels = Object.keys(reports.statusDistribution).map(formatStatus);
+                const data = Object.values(reports.statusDistribution);
+                const backgroundColors = Object.keys(reports.statusDistribution).map(getStatusColor);
+                
+                const ctx = document.getElementById('companyStatusChart').getContext('2d');
+                if (companyStatusChartInstance) companyStatusChartInstance.destroy();
+                companyStatusChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: backgroundColors
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+        }
+    } catch (err) {
+        console.error("Failed to load company reports", err);
+    }
 }

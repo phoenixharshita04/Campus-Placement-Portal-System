@@ -39,7 +39,23 @@ public class JobPosting {
     private String lastDateToApply;
 
     @Column(nullable = false)
+    private String eligibleBranches = "ALL";
+
+    @Column(nullable = false)
     private String status = "ACTIVE"; 
+
+    @Column(columnDefinition = "TEXT")
+    private String ctcComponents;
+
+    @Column(columnDefinition = "TEXT")
+    private String selectionRounds;
+
+    @Column(columnDefinition = "TEXT")
+    private String bondDetails;
+
+    private String testPlatform;
+    private String testDatetime;
+    private String testLink;
 
     public JobPosting() {}
 
@@ -69,4 +85,25 @@ public class JobPosting {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getEligibleBranches() { return eligibleBranches; }
+    public void setEligibleBranches(String eligibleBranches) { this.eligibleBranches = eligibleBranches; }
+
+    public String getCtcComponents() { return ctcComponents; }
+    public void setCtcComponents(String ctcComponents) { this.ctcComponents = ctcComponents; }
+
+    public String getSelectionRounds() { return selectionRounds; }
+    public void setSelectionRounds(String selectionRounds) { this.selectionRounds = selectionRounds; }
+
+    public String getBondDetails() { return bondDetails; }
+    public void setBondDetails(String bondDetails) { this.bondDetails = bondDetails; }
+
+    public String getTestPlatform() { return testPlatform; }
+    public void setTestPlatform(String testPlatform) { this.testPlatform = testPlatform; }
+    
+    public String getTestDatetime() { return testDatetime; }
+    public void setTestDatetime(String testDatetime) { this.testDatetime = testDatetime; }
+    
+    public String getTestLink() { return testLink; }
+    public void setTestLink(String testLink) { this.testLink = testLink; }
 }

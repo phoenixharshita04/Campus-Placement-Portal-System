@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
                 localStorage.setItem('token', data.accessToken);
                 localStorage.setItem('role', data.role);
+                localStorage.setItem('user', JSON.stringify({ id: data.userId, role: data.role }));
                 redirectBasedOnRole(data.role);
             } else {
                 errorDiv.textContent = 'Invalid email or password';
