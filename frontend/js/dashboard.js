@@ -1,3 +1,4 @@
+const DEV_HOST = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8080' : '';
 document.addEventListener('DOMContentLoaded', async () => {
     // Check authentication
     if (!getToken()) {
@@ -336,7 +337,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         try {
             const token = getToken();
-            const response = await fetch('http://localhost:8080/api/student/profile/resume', {
+            const response = await fetch(`${DEV_HOST}/api/student/profile/resume`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -855,7 +856,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         try {
             const token = getToken();
-            const res = await fetch(`http://localhost:8080/api/jobs/applications/${appId}/respond`, {
+            const res = await fetch(`${DEV_HOST}/api/jobs/applications/${appId}/respond`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1173,7 +1174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateDocStatus(elementId, url) {
         const el = document.getElementById(elementId);
         if (url) {
-            el.innerHTML = `<a href="http://localhost:8080${url}" target="_blank" class="badge" style="background:#dcfce7; color:#166534; text-decoration:none;">View Uploaded Document</a>`;
+            el.innerHTML = `<a href="${DEV_HOST}${url}" target="_blank" class="badge" style="background:#dcfce7; color:#166534; text-decoration:none;">View Uploaded Document</a>`;
         } else {
             el.innerHTML = `<span class="badge" style="background:#fee2e2; color:#ef4444;">Not Uploaded</span>`;
         }
@@ -1194,7 +1195,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 statusEl.innerHTML = `<span style="color:var(--text-secondary);">Uploading...</span>`;
 
                 try {
-                    const response = await fetch('http://localhost:8080/api/student/profile/upload-document', {
+                    const response = await fetch(`${DEV_HOST}/api/student/profile/upload-document`, {
                         method: 'POST',
                         headers: {
                             'Authorization': 'Bearer ' + getToken()

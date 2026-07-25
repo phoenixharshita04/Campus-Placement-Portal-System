@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:8080/api/auth';
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8080/api/auth'
+    : '/api/auth';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Check if user is already logged in
