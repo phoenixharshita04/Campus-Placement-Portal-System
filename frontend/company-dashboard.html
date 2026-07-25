@@ -738,5 +738,37 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/company-dashboard.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    <script>
+
+        // Initialize 3D Tilt Effect on cards
+        VanillaTilt.init(document.querySelectorAll(".card, .glass-card, .glass-panel:not(.sidebar)"), {
+            max: 5,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.1,
+        });
+
+        // Parallax depth effect for main background elements
+        document.addEventListener("mousemove", (e) => {
+            const x = (window.innerWidth - e.pageX * 2) / 90;
+            const y = (window.innerHeight - e.pageY * 2) / 90;
+            document.body.style.backgroundPosition = `${x}px ${y}px`;
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        // Make grids and lists draggable with smooth floating physics
+        document.querySelectorAll('#jobsList, #applicationsList, .metrics-grid, [style*="display: grid"]').forEach(grid => {
+            if(grid) {
+                new Sortable(grid, {
+                    animation: 400,
+                    easing: "cubic-bezier(0.25, 1, 0.5, 1)", // Smooth float physics
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag'
+                });
+            }
+        });
+    </script>
 </body>
 </html>

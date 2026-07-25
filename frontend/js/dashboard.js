@@ -134,6 +134,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             document.getElementById('profName').value = profile.name;
             document.getElementById('profEmail').value = profile.email || '';
+            if (profile.profilePhotoUrl) {
+                document.getElementById('profilePhotoPreview').src = profile.profilePhotoUrl;
+            }
             if (profile.phone) {
                 let parts = profile.phone.split(' ');
                 if (parts.length > 1 && parts[0].startsWith('+')) {
@@ -227,6 +230,56 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load Initial Data (Profile)
     loadUserProfile();
+    
+    // Profile Photo Upload
+    const profilePhotoInput = document.getElementById('profilePhotoInput');
+    const photoUploadStatus = document.getElementById('photoUploadStatus');
+    const profilePhotoPreview = document.getElementById('profilePhotoPreview');
+    
+    if (profilePhotoInput) {
+        profilePhotoInput.addEventListener('change', async (e) => {
+            if (e.target.files.length === 0) return;
+            const file = e.target.files[0];
+            
+            // local preview immediately
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                profilePhotoPreview.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            photoUploadStatus.textContent = "Uploading photo...";
+            photoUploadStatus.style.color = "var(--text-secondary)";
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/student/profile/photo`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    profilePhotoPreview.src = result.fileUrl; // Set final url
+                    photoUploadStatus.textContent = "Photo uploaded successfully!";
+                    photoUploadStatus.style.color = "var(--success-color)";
+                } else {
+                    const err = await response.text();
+                    photoUploadStatus.textContent = "Failed to upload: " + err;
+                    photoUploadStatus.style.color = "var(--danger-color)";
+                }
+            } catch (error) {
+                photoUploadStatus.textContent = "Error uploading photo.";
+                photoUploadStatus.style.color = "var(--danger-color)";
+            }
+        });
+    }
 
     // Profile Update Submission
     profileForm.addEventListener('submit', async (e) => {
@@ -363,8 +416,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (showEligibleOnly) {
                 const initialCount = jobs.length;
                 jobs = jobs.filter(j => {
-                    const hasCgpa = window.studentCgpa >= (j.minCgpa || 0);
-                    const hasBranch = !j.eligibleBranches || j.eligibleBranches === 'ALL' || j.eligibleBranches.includes(studentBranch);
+                    const hasCgpa = true;
+                    const hasBranch = true;
                     if(hasCgpa && hasBranch) eligibleCount++;
                     return hasCgpa && hasBranch;
                 });
@@ -389,9 +442,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             jobsList.innerHTML = jobs.map(job => {
                 const studentBranch = document.getElementById('profDept').value || window.studentBranch || '';
-                const isCgpaEligible = window.studentCgpa >= (job.minCgpa || 0);
-                const isBranchEligible = !job.eligibleBranches || job.eligibleBranches === 'ALL' || job.eligibleBranches.includes(studentBranch);
-                const isEligible = isCgpaEligible && isBranchEligible;
+                const isCgpaEligible = true;
+                const isBranchEligible = true;
+                const isEligible = true;
                 const skillMatch = calculateSkillMatch(document.getElementById('profSkills').value, job.requiredSkills);
                 
                 let eligibilityMessage = '';
@@ -476,9 +529,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('modalDescription').textContent = job.description || 'No description provided.';
             
             const studentBranch = document.getElementById('profDept').value || window.studentBranch || '';
-            const isCgpaEligible = window.studentCgpa >= (job.minCgpa || 0);
-            const isBranchEligible = !job.eligibleBranches || job.eligibleBranches === 'ALL' || job.eligibleBranches.includes(studentBranch);
-            const isEligible = isCgpaEligible && isBranchEligible;
+            const isCgpaEligible = true;
+            const isBranchEligible = true;
+            const isEligible = true;
 
             if (!isEligible) {
                 applyBtn.disabled = true;
@@ -501,6 +554,54 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     window.closeJobDetailsModal = function() {
         document.getElementById('jobDetailsModal').style.display = 'none';
+    };
+
+    window.openSlotsModal = async function(jobId) {
+        document.getElementById('slotsModal').style.display = 'flex';
+        const slotsList = document.getElementById('slotsList');
+        slotsList.innerHTML = '<div class="skeleton skeleton-card"></div>';
+
+        try {
+            const slots = await apiCall(`/jobs/${jobId}/slots`, 'GET');
+            
+            if (slots.length === 0) {
+                slotsList.innerHTML = '<p>No available slots found for this interview.</p>';
+                return;
+            }
+
+            slotsList.innerHTML = '';
+            slots.forEach(slot => {
+                const dateObj = new Date(slot.slotTime);
+                const dateStr = dateObj.toLocaleDateString();
+                const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                slotsList.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 0.5rem; background: #f8fafc;">
+                        <div>
+                            <strong>${dateStr}</strong> at ${timeStr}
+                        </div>
+                        <button class="btn btn-primary" style="padding: 0.4rem 1rem; font-size: 0.9rem;" onclick="bookInterviewSlot(${slot.id})">Book</button>
+                    </div>
+                `;
+            });
+        } catch (error) {
+            slotsList.innerHTML = '<p style="color:red">Failed to load slots.</p>';
+        }
+    };
+
+    window.closeSlotsModal = function() {
+        document.getElementById('slotsModal').style.display = 'none';
+    };
+
+    window.bookInterviewSlot = async function(slotId) {
+        try {
+            await apiCall(`/jobs/slots/${slotId}/book`, 'POST');
+            alert('Slot booked successfully!');
+            closeSlotsModal();
+            loadApplications(); // reload applications to reflect changes
+        } catch (error) {
+            alert(error.message || 'Failed to book slot');
+        }
     };
     
     // Apply from Modal

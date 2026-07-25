@@ -120,17 +120,20 @@ public class JobController {
             return ResponseEntity.badRequest().body("Job is no longer active");
         }
 
+        // Eligibility checks bypassed
+        /*
         if (profile.getCgpa() < job.getMinCgpa()) {
             return ResponseEntity.badRequest().body("Not eligible for this job based on CGPA criteria");
         }
         
         // Branch Check
         if (job.getEligibleBranches() != null && !job.getEligibleBranches().equalsIgnoreCase("ALL")) {
-            String studentBranch = profile.getDepartment() != null ? profile.getDepartment() : profile.getBranch();
+            String studentBranch = profile.getDepartment();
             if (studentBranch == null || !job.getEligibleBranches().contains(studentBranch)) {
                 return ResponseEntity.badRequest().body("Not eligible for this job based on Branch criteria");
             }
         }
+        */
 
         if (Boolean.TRUE.equals(profile.getIsOptedOut())) {
             return ResponseEntity.badRequest().body("You have opted out of Campus Placements for this academic year.");

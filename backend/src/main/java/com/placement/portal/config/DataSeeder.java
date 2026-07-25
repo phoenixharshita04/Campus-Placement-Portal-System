@@ -130,6 +130,38 @@ public class DataSeeder implements CommandLineRunner {
                 "ALL"
             );
         }
+        
+        if (!userRepository.existsByEmail("hr@amazon.com")) {
+            seedCompanyAndJob(
+                "amazon_hr", "Amazon", "hr@amazon.com", "https://amazon.jobs", "E-commerce & Tech",
+                "Earth's most customer-centric company.",
+                "SDE 1", "Bengaluru", "45 LPA", 8.0,
+                "Java, C++, AWS, DSA", "Build scalable microservices and infrastructure.",
+                "Branch: CSE, IT", "2026-10-31",
+                "45 LPA", "4 Rounds", "No bond",
+                "CSE,IT"
+            );
+            
+            seedCompanyAndJob(
+                "microsoft_hr", "Microsoft", "hr@microsoft.com", "https://careers.microsoft.com", "Technology",
+                "Empowering every person and organization.",
+                "Software Engineer", "Hyderabad", "42 LPA", 8.5,
+                "C#, Azure, System Design", "Develop cloud technologies and enterprise software.",
+                "Branch: CSE, IT, AI & DS", "2026-11-15",
+                "42 LPA", "4 Rounds", "No bond",
+                "CSE,IT,AI & DS"
+            );
+            
+            seedCompanyAndJob(
+                "infosys_hr", "Infosys", "hr@infosys.com", "https://infosys.com", "IT Services",
+                "Global leader in next-generation digital services.",
+                "Systems Engineer", "Pune", "5.0 LPA", 6.0,
+                "Java, Python, DBMS", "Develop, test and support IT solutions for global clients.",
+                "Branch: ALL", "2026-12-01",
+                "5.0 LPA", "2 Rounds", "1 year bond",
+                "ALL"
+            );
+        }
     }
 
     private void seedCompanyAndJob(String username, String companyName, String email, String website, String industry, String companyDesc,

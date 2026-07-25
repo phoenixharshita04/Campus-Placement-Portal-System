@@ -6,6 +6,7 @@ import com.placement.portal.repository.StudentProfileRepository;
 import com.placement.portal.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/student/profile")
@@ -46,6 +48,7 @@ public class StudentProfileController {
         dto.setTenthMarksheetUrl(profile.getTenthMarksheetUrl());
         dto.setTwelfthMarksheetUrl(profile.getTwelfthMarksheetUrl());
         dto.setAadharUrl(profile.getAadharUrl());
+        dto.setProfilePhotoUrl(profile.getProfilePhotoUrl());
         dto.setIsOptedOut(profile.getIsOptedOut() != null ? profile.getIsOptedOut() : false);
 
         return ResponseEntity.ok(dto);
@@ -69,6 +72,7 @@ public class StudentProfileController {
         if (profileDTO.getTenthMarksheetUrl() != null) profile.setTenthMarksheetUrl(profileDTO.getTenthMarksheetUrl());
         if (profileDTO.getTwelfthMarksheetUrl() != null) profile.setTwelfthMarksheetUrl(profileDTO.getTwelfthMarksheetUrl());
         if (profileDTO.getAadharUrl() != null) profile.setAadharUrl(profileDTO.getAadharUrl());
+        if (profileDTO.getProfilePhotoUrl() != null) profile.setProfilePhotoUrl(profileDTO.getProfilePhotoUrl());
         
         if (profileDTO.getIsOptedOut() != null) {
             profile.setIsOptedOut(profileDTO.getIsOptedOut());
@@ -148,7 +152,39 @@ public class StudentProfileController {
             return ResponseEntity.ok(fileUrl);
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Failed to upload file.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Could not upload document: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/photo")
+    public ResponseEntity<?> uploadPhoto(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                          @RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("Please select a file to upload.");
+        }
+
+        StudentProfile profile = studentProfileRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+        try {
+            File dir = new File(UPLOAD_DIR);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            Path path = Paths.get(UPLOAD_DIR + fileName);
+            Files.write(path, file.getBytes());
+
+            String fileUrl = "/api/files/" + fileName;
+            profile.setProfilePhotoUrl(fileUrl);
+            studentProfileRepository.save(profile);
+
+            return ResponseEntity.ok(Collections.singletonMap("fileUrl", fileUrl));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Could not upload photo: " + e.getMessage());
         }
     }
 }

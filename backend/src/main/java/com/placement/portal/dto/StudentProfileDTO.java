@@ -29,6 +29,7 @@ public class StudentProfileDTO {
     private String tenthMarksheetUrl;
     private String twelfthMarksheetUrl;
     private String aadharUrl;
+    private String profilePhotoUrl;
 
     public StudentProfileDTO() {}
 
@@ -86,4 +87,6 @@ public class StudentProfileDTO {
     public void setTwelfthMarksheetUrl(String twelfthMarksheetUrl) { this.twelfthMarksheetUrl = twelfthMarksheetUrl; }
     public String getAadharUrl() { return aadharUrl; }
     public void setAadharUrl(String aadharUrl) { this.aadharUrl = aadharUrl; }
+    public String getProfilePhotoUrl() { return profilePhotoUrl; }
+    public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
 }

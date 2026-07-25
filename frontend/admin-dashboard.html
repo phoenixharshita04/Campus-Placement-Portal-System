@@ -227,11 +227,38 @@
         </div>
 
         <div class="data-card hidden" id="studentsSection">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2 style="margin: 0;">Students</h2>
-                <div>
-                    <button class="btn-outline" style="color: var(--primary-color); border-color: var(--primary-color);" onclick="exportStudents('placed')">Export Placed (CSV)</button>
-                    <button class="btn-outline" style="color: var(--primary-color); border-color: var(--primary-color); margin-left: 0.5rem;" onclick="exportStudents('unplaced')">Export Unplaced (CSV)</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0; min-width: 150px;">Students</h2>
+                
+                <!-- Shortlisting Filters -->
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <input type="number" id="filterCgpa" class="form-control" placeholder="Min CGPA" step="0.1" min="0" max="10" style="width: 100px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    <select id="filterBranch" class="form-control" style="width: 130px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px;">
+                        <option value="">All Branches</option>
+                        <option value="CSE">CSE</option>
+                        <option value="IT">IT</option>
+                        <option value="ECE">ECE</option>
+                        <option value="EEE">EEE</option>
+                        <option value="ME">ME</option>
+                        <option value="CE">CE</option>
+                    </select>
+                    <!-- Simulated Backlogs filter (since backlogs may not exist in model, we can just add input and ignore it for now or implement client side if mock data has it) -->
+                    <input type="number" id="filterBacklogs" class="form-control" placeholder="Max Backlogs" min="0" style="width: 120px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px;">
+                    
+                    <button class="btn-outline" style="background: var(--primary-color); color: white;" onclick="applyStudentFilters()">Filter</button>
+                    <button class="btn-outline" style="color: #64748b; border-color: #cbd5e1;" onclick="resetStudentFilters()">Reset</button>
+                </div>
+                
+                <!-- Export Actions -->
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-outline" style="color: #10b981; border-color: #10b981; display: flex; align-items: center; gap: 5px;" onclick="exportFilteredStudentsCSV()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Export Shortlist (CSV)
+                    </button>
+                    <button class="btn-outline" style="color: #8b5cf6; border-color: #8b5cf6; display: flex; align-items: center; gap: 5px;" onclick="bulkDownloadResumes()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Bulk Download Resumes (ZIP)
+                    </button>
                 </div>
             </div>
             <table>
@@ -380,6 +407,40 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="js/admin-dashboard.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    <script>
+
+        // Initialize 3D Tilt Effect on cards
+        VanillaTilt.init(document.querySelectorAll(".card, .data-card, .glass-panel:not(.sidebar)"), {
+            max: 5,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.1,
+        });
+
+        // Parallax depth effect for main background elements
+        document.addEventListener("mousemove", (e) => {
+            const x = (window.innerWidth - e.pageX * 2) / 90;
+            const y = (window.innerHeight - e.pageY * 2) / 90;
+            document.body.style.backgroundPosition = `${x}px ${y}px`;
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        // Make grids draggable with smooth floating physics
+        document.querySelectorAll('.metrics-grid, [style*="display: grid"]').forEach(grid => {
+            if(grid) {
+                new Sortable(grid, {
+                    animation: 400,
+                    easing: "cubic-bezier(0.25, 1, 0.5, 1)", // Smooth float physics
+                    ghostClass: 'sortable-ghost',
+                    dragClass: 'sortable-drag'
+                });
+            }
+        });
+    </script>
 </body>
 </html>

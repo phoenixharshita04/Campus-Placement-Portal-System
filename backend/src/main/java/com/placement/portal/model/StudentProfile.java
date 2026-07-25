@@ -56,6 +56,9 @@ public class StudentProfile {
     @Column(name = "aadhar_url")
     private String aadharUrl;
 
+    @Column(name = "profile_photo_url")
+    private String profilePhotoUrl;
+
     @Column(name = "is_opted_out")
     private Boolean isOptedOut = false;
 
@@ -95,4 +98,6 @@ public class StudentProfile {
     public void setTwelfthMarksheetUrl(String twelfthMarksheetUrl) { this.twelfthMarksheetUrl = twelfthMarksheetUrl; }
     public String getAadharUrl() { return aadharUrl; }
     public void setAadharUrl(String aadharUrl) { this.aadharUrl = aadharUrl; }
+    public String getProfilePhotoUrl() { return profilePhotoUrl; }
+    public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
 }

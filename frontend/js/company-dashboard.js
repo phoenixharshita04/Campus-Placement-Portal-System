@@ -228,6 +228,41 @@ function closeEditJobModal() {
     document.getElementById('editJobModal').style.display = 'none';
 }
 
+function openGenerateSlotsModal(jobId) {
+    document.getElementById('slotsJobId').value = jobId;
+    document.getElementById('generateSlotsModal').style.display = 'flex';
+}
+
+function closeGenerateSlotsModal() {
+    document.getElementById('generateSlotsModal').style.display = 'none';
+}
+
+document.getElementById('generateSlotsForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const jobId = document.getElementById('slotsJobId').value;
+    const startTime = document.getElementById('slotsStartTime').value;
+    const slotCount = document.getElementById('slotsCount').value;
+    const durationMinutes = document.getElementById('slotsDuration').value;
+
+    try {
+        const res = await fetchWithAuth(`/company/jobs/${jobId}/slots`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ startTime, slotCount, durationMinutes })
+        });
+        
+        if (res.ok) {
+            alert('Slots generated successfully!');
+            closeGenerateSlotsModal();
+        } else {
+            const err = await res.text();
+            alert('Error generating slots: ' + err);
+        }
+    } catch (error) {
+        alert('Failed to generate slots');
+    }
+});
+
 async function handleJobEdit(e) {
     e.preventDefault();
     const jobId = document.getElementById('editJobId').value;

@@ -67,7 +67,26 @@ async function loadStudents() {
                 return;
             }
             
-            students.forEach(s => {
+            const minCgpa = parseFloat(document.getElementById('filterCgpa')?.value) || 0;
+            const branch = document.getElementById('filterBranch')?.value || '';
+            
+            // Assume backlogs isn't in backend yet, so we just filter by what's available
+            const filteredStudents = students.filter(s => {
+                let matches = true;
+                if (minCgpa > 0 && (s.cgpa || 0) < minCgpa) matches = false;
+                if (branch && s.branch !== branch) matches = false;
+                return matches;
+            });
+            
+            // Store globally for export
+            window.currentFilteredStudents = filteredStudents;
+
+            if (filteredStudents.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No students match the criteria</td></tr>';
+                return;
+            }
+            
+            filteredStudents.forEach(s => {
                 tbody.innerHTML += `
                     <tr>
                         <td>#${s.id}</td>
@@ -85,6 +104,76 @@ async function loadStudents() {
         }
     } catch (err) {
         console.error("Failed to load students", err);
+    }
+}
+
+function applyStudentFilters() {
+    loadStudents();
+}
+
+function resetStudentFilters() {
+    document.getElementById('filterCgpa').value = '';
+    document.getElementById('filterBranch').value = '';
+    document.getElementById('filterBacklogs').value = '';
+    loadStudents();
+}
+
+function exportFilteredStudentsCSV() {
+    if (!window.currentFilteredStudents || window.currentFilteredStudents.length === 0) {
+        return alert("No students to export.");
+    }
+    
+    let csv = 'ID,Name,Roll No,Department,CGPA,Grad Year\n';
+    window.currentFilteredStudents.forEach(s => {
+        csv += `${s.id || s.student_id},"${s.name}","${s.rollNo}","${s.branch || s.department}",${s.cgpa},${s.graduationYear}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `shortlisted_students.csv`;
+    a.click();
+}
+
+async function bulkDownloadResumes() {
+    if (!window.currentFilteredStudents || window.currentFilteredStudents.length === 0) {
+        return alert("No students available for download.");
+    }
+    
+    if (typeof JSZip === 'undefined' || typeof saveAs === 'undefined') {
+        return alert("Missing JSZip or FileSaver libraries.");
+    }
+
+    const zip = new JSZip();
+    let count = 0;
+    
+    for (const s of window.currentFilteredStudents) {
+        if (s.resume) {
+            try {
+                const response = await fetch(s.resume);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    // Extract filename from URL or generate one
+                    let filename = s.resume.substring(s.resume.lastIndexOf('/') + 1) || `${s.name.replace(/ /g, '_')}_Resume.pdf`;
+                    zip.file(filename, blob);
+                    count++;
+                }
+            } catch(e) {
+                console.error("Could not fetch resume for " + s.name);
+            }
+        }
+    }
+    
+    if (count === 0) {
+        return alert("No resumes found for the shortlisted students.");
+    }
+    
+    try {
+        const content = await zip.generateAsync({type:"blob"});
+        saveAs(content, "Shortlisted_Resumes.zip");
+    } catch (err) {
+        alert("Failed to generate zip file.");
     }
 }
 

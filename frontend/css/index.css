@@ -1,36 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* Light Mode Variables */
-    --primary-color: #3b82f6;
-    --primary-hover: #2563eb;
+    /* Light Mode Variables - Crisp & Vibrant */
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
     --secondary-color: #1e293b;
-    --accent-color: #8b5cf6;
+    --accent-color: #ec4899;
     --bg-color: #f8fafc;
     --surface-color: #ffffff;
     --text-primary: #0f172a;
     --text-secondary: #64748b;
     --border-color: #e2e8f0;
     --success-color: #10b981;
-    --danger-color: #ef4444;
+    --danger-color: #f43f5e;
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: 1px solid rgba(255, 255, 255, 0.3);
     --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
 }
 
 body.dark-mode {
-    --primary-color: #60a5fa;
-    --primary-hover: #3b82f6;
-    --secondary-color: #94a3b8;
-    --accent-color: #a78bfa;
-    --bg-color: #0f172a;
-    --surface-color: #1e293b;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --border-color: #334155;
-    --glass-bg: rgba(30, 41, 59, 0.7);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.05);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    /* Dark Mode Variables - Deep Space Vibrant (Antigravity Style) */
+    --primary-color: #00f3ff;
+    --primary-hover: #00c3cc;
+    --secondary-color: #a8b2d1;
+    --accent-color: #ff2a5f;
+    --bg-color: #0b0f19;
+    --surface-color: #131b2f;
+    --text-primary: #e2e8f0;
+    --text-secondary: #8892b0;
+    --border-color: #1e293b;
+    --success-color: #10b981;
+    --danger-color: #ff2a5f;
+    --glass-bg: rgba(19, 27, 47, 0.7);
+    --glass-border: 1px solid rgba(0, 243, 255, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 243, 255, 0.05);
+    background-image: radial-gradient(circle at center, rgba(0, 243, 255, 0.08) 0%, transparent 40%),
+                      radial-gradient(circle at bottom right, rgba(255, 42, 95, 0.08) 0%, transparent 40%);
 }
 
 * {
@@ -42,6 +47,10 @@ body.dark-mode {
 
 body {
     background-color: var(--bg-color);
+    background-image: radial-gradient(circle at center, rgba(79, 70, 229, 0.08) 0%, transparent 40%),
+                      radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.08) 0%, transparent 40%);
+    background-attachment: fixed;
+    background-size: 150vw 150vh;
     color: var(--text-primary);
     line-height: 1.6;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -338,4 +347,145 @@ p {
 .cmd-item:hover, .cmd-item.active {
     background: rgba(59, 130, 246, 0.1);
     color: var(--primary-color);
+}
+/* Holographic Shader Effects */
+@keyframes hologram-flicker {
+    0% { opacity: 0.9; }
+    5% { opacity: 0.7; }
+    10% { opacity: 0.95; }
+    15% { opacity: 0.8; text-shadow: none; }
+    20% { opacity: 1; text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--accent-color); }
+    50% { opacity: 0.9; }
+    55% { opacity: 0.8; }
+    60% { opacity: 1; }
+    100% { opacity: 0.95; }
+}
+
+@keyframes scanline-move {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+.holographic-overlay {
+    position: relative;
+    overflow: hidden;
+    animation: hologram-flicker 4s infinite alternate;
+}
+
+.holographic-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(0, 243, 255, 0.4);
+    opacity: 0.7;
+    z-index: 10;
+    pointer-events: none;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+    animation: scanline-move 3s linear infinite;
+}
+
+.holographic-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        transparent 0px,
+        rgba(0, 0, 0, 0.05) 1px,
+        transparent 2px
+    );
+    z-index: 9;
+    pointer-events: none;
+}
+
+/* Apply Holographic Effect to Charts and Cards */
+.chart-container, .stat-card, .data-card, .holographic-overlay {
+    position: relative;
+    overflow: hidden;
+    animation: hologram-flicker 4s infinite alternate;
+}
+
+.chart-container::before, .stat-card::before, .data-card::before, .holographic-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(0, 243, 255, 0.4);
+    opacity: 0.7;
+    z-index: 10;
+    pointer-events: none;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+    animation: scanline-move 3s linear infinite;
+}
+
+.chart-container::after, .stat-card::after, .data-card::after, .holographic-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        transparent 0px,
+        rgba(0, 243, 255, 0.05) 1px,
+        transparent 3px
+    );
+    z-index: 9;
+    pointer-events: none;
+}
+
+/* SortableJS Floating Physics Classes */
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: var(--primary-color) !important;
+    border: 1px dashed var(--accent-color) !important;
+    border-radius: 8px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.sortable-drag {
+    cursor: grabbing !important;
+    opacity: 1 !important;
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px var(--primary-color) !important;
+    z-index: 1000 !important;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
+/* Give movable containers a grab cursor */
+.metrics-grid > *, #jobsList > *, #applicationsList > *, #testsList > * {
+    cursor: grab;
+}
+
+.metrics-grid > *:active, #jobsList > *:active, #applicationsList > *:active, #testsList > *:active {
+    cursor: grabbing;
+}
+
+/* Make dynamic lists into grid layouts for smooth Drag & Drop */
+#jobsList, #applicationsList, #testsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+/* Add background color and clear layout positioning to your modals/cards */
+.job-card, .modal-content {
+  background-color: #1a1d24; /* Solid dark background */
+  z-index: 10;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ensure background filters don't spill through */
+.available-jobs-container {
+  position: relative;
+  z-index: 1;
 }

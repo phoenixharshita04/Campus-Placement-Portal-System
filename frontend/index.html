@@ -30,5 +30,23 @@
     <footer class="container text-center" style="padding: 20px 0; color: var(--text-secondary); margin-top: auto;">
         <p>&copy; 2026 PlacementConnect. All rights reserved.</p>
     </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    <script>
+
+        // Initialize 3D Tilt Effect on cards
+        VanillaTilt.init(document.querySelectorAll(".glass-panel"), {
+            max: 5,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.1,
+        });
+
+        // Parallax depth effect for main background elements
+        document.addEventListener("mousemove", (e) => {
+            const x = (window.innerWidth - e.pageX * 2) / 90;
+            const y = (window.innerHeight - e.pageY * 2) / 90;
+            document.body.style.backgroundPosition = `${x}px ${y}px`;
+        });
+    </script>
 </body>
 </html>
