@@ -36,7 +36,7 @@
     </nav>
 
     <main class="container">
-        <div class="glass-panel auth-container">
+        <div class="glass-panel auth-container auth-card">
             <!-- Login Form -->
             <div id="loginSection">
                 <h2 class="text-center">Welcome Back</h2>
@@ -44,11 +44,11 @@
 
                 <form id="loginForm">
                     <div class="form-group">
-                        <label>Email Address</label>
+                        <label for="loginEmail">Email Address</label>
                         <input type="email" id="loginEmail" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
+                        <label for="loginPassword">Password</label>
                         <input type="password" id="loginPassword" class="form-control" required>
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%">Log In</button>
@@ -81,26 +81,26 @@
                 <form id="registerForm">
                     <!-- Common Fields -->
                     <div class="form-group">
-                        <label>Email Address</label>
+                        <label for="regEmail">Email Address</label>
                         <input type="email" id="regEmail" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
+                        <label for="regPassword">Password</label>
                         <input type="password" id="regPassword" class="form-control" required minlength="6">
                     </div>
 
                     <!-- Student Specific -->
                     <div id="studentFields">
                         <div class="form-group">
-                            <label>Full Name</label>
+                            <label for="regName">Full Name</label>
                             <input type="text" id="regName" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>Roll Number</label>
+                            <label for="regRollNo">Roll Number</label>
                             <input type="text" id="regRollNo" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>Department</label>
+                            <label for="regDept">Department</label>
                             <select id="regDept" class="form-control" required>
                                 <option value="" disabled selected>Select Branch</option>
                                 <option value="CSE">Computer Science & Engineering (CSE)</option>
@@ -118,11 +118,11 @@
                         </div>
                         <div class="form-group" style="display: flex; gap: 10px;">
                             <div style="flex: 1;">
-                                <label>CGPA</label>
+                                <label for="regCgpa">CGPA</label>
                                 <input type="number" id="regCgpa" class="form-control" step="0.01" min="6.0" max="10">
                             </div>
                             <div style="flex: 1;">
-                                <label>Grad Year</label>
+                                <label for="regYear">Grad Year</label>
                                 <input type="number" id="regYear" class="form-control" min="2020">
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                     <!-- Company Specific -->
                     <div id="companyFields" class="hidden">
                         <div class="form-group">
-                            <label>Company Name</label>
+                            <label for="regCompanyName">Company Name</label>
                             <input type="text" id="regCompanyName" class="form-control">
                         </div>
                     </div>
@@ -155,7 +155,7 @@
 
                 <form id="forgotForm">
                     <div class="form-group">
-                        <label>Email Address</label>
+                        <label for="forgotEmail">Email Address</label>
                         <input type="email" id="forgotEmail" class="form-control" required>
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%">Reset Password</button>
