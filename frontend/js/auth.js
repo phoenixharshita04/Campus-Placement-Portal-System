@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorDiv.textContent = 'Invalid email or password';
             }
         } catch (error) {
+            console.error("Login request failed:", error);
             errorDiv.textContent = 'Connection error. Is the backend running?';
         }
     });
