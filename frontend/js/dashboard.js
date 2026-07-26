@@ -1,4 +1,4 @@
-const DEV_HOST = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') ? 'https://campus-placement-backend.onrender.com' : '';
+const DEV_HOST = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') ? 'https://campus-placement-portal-system.onrender.com' : '';
 document.addEventListener('DOMContentLoaded', async () => {
     // Check authentication
     if (!getToken()) {
