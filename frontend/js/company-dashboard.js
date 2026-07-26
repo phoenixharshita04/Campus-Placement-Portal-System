@@ -1,5 +1,5 @@
 const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'http://localhost:8080/api'
+    ? 'https://campus-placement-backend.onrender.com/api'
     : '/api';
 
 // Check Authentication
