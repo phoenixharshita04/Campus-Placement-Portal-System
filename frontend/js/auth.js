@@ -101,11 +101,28 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (res.ok) {
-                const data = await res.json();
-                localStorage.setItem('token', data.accessToken);
-                localStorage.setItem('role', data.role);
-                localStorage.setItem('user', JSON.stringify({ id: data.userId, role: data.role }));
-                redirectBasedOnRole(data.role);
+                const text = await res.text();
+                let data = null;
+                if (text) {
+                    try {
+                        data = JSON.parse(text);
+                    } catch (parseError) {
+                        console.error("Failed to parse JSON response:", parseError);
+                    }
+                }
+
+                if (data && (data.accessToken || data.token)) {
+                    const token = data.accessToken || data.token;
+                    const role = data.role;
+                    const userId = data.userId || (data.user && data.user.id);
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('role', role);
+                    localStorage.setItem('user', JSON.stringify({ id: userId, role: role }));
+                    redirectBasedOnRole(role);
+                } else {
+                    console.error("Invalid login response payload:", data);
+                    errorDiv.textContent = 'Invalid login response format';
+                }
             } else {
                 errorDiv.textContent = 'Invalid email or password';
             }

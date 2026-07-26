@@ -1,6 +1,7 @@
 package com.placement.portal.controller;
 
 import java.util.Map;
+import java.util.HashMap;
 
 import com.placement.portal.dto.JwtAuthenticationResponse;
 import com.placement.portal.dto.LoginRequest;
@@ -58,7 +59,20 @@ public class AuthController {
         
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
 
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt, user.getRole().name(), user.getId()));
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("token", jwt);
+        response.put("accessToken", jwt);
+        response.put("role", user.getRole().name());
+        response.put("userId", user.getId());
+
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("id", user.getId());
+        userMap.put("email", user.getEmail());
+        userMap.put("role", user.getRole().name());
+        response.put("user", userMap);
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
