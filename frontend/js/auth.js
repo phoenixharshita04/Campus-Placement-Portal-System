@@ -1,6 +1,4 @@
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'https://campus-placement-portal-system.onrender.com/api/auth'
-    : '/api/auth';
+const API_URL = 'https://campus-placement-portal-system-1.onrender.com/api/auth';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Check if user is already logged in

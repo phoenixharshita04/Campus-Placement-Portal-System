@@ -1,6 +1,4 @@
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? 'https://campus-placement-portal-system.onrender.com/api'
-    : '/api';
+const API_URL = 'https://campus-placement-portal-system-1.onrender.com/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
