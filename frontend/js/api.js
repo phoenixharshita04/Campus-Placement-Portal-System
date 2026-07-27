@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://campus-placement-portal-system-1.onrender.com/api';
+const API_BASE_URL = 'https://placement-portal-backend.onrender.com/api';
 
 function getToken() {
     return localStorage.getItem('token');

@@ -1,4 +1,4 @@
-const API_URL = 'https://campus-placement-portal-system-1.onrender.com/api';
+const API_URL = 'https://placement-portal-backend.onrender.com/api';
 
 // Check Authentication
 document.addEventListener('DOMContentLoaded', () => {

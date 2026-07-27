@@ -1,4 +1,4 @@
-const API_URL = 'https://campus-placement-portal-system-1.onrender.com/api';
+const API_URL = 'https://placement-portal-backend.onrender.com/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');

@@ -1,4 +1,4 @@
-const DEV_HOST = 'https://campus-placement-portal-system-1.onrender.com';
+const DEV_HOST = 'https://placement-portal-backend.onrender.com';
 document.addEventListener('DOMContentLoaded', async () => {
     // Check authentication
     if (!getToken()) {
