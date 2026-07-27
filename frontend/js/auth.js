@@ -100,19 +100,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ email, password })
             });
 
+            const contentType = res.headers.get("content-type");
+
             if (res.ok) {
-                const text = await res.text();
-                let data = null;
-                if (text) {
-                    try {
-                        data = JSON.parse(text);
-                    } catch (parseError) {
-                        console.error("Failed to parse JSON response:", parseError);
-                    }
+                if (!contentType || !contentType.includes("application/json")) {
+                    const rawText = await res.text();
+                    console.log("RAW_BACKEND_RESPONSE:", rawText);
+                    errorDiv.textContent = 'Server is waking up/warming up. Please try again.';
+                    return;
                 }
 
-                if (data && (data.accessToken || data.token)) {
-                    const token = data.accessToken || data.token;
+                const data = await res.json();
+                console.log("RAW_BACKEND_RESPONSE:", data);
+
+                if (data && data.token) {
+                    const token = data.token;
                     const role = data.role;
                     const userId = data.userId || (data.user && data.user.id);
                     localStorage.setItem('token', token);
@@ -124,6 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     errorDiv.textContent = 'Invalid login response format';
                 }
             } else {
+                if (contentType && contentType.includes("application/json")) {
+                    const data = await res.json();
+                    console.log("RAW_BACKEND_RESPONSE:", data);
+                } else {
+                    const rawText = await res.text();
+                    console.log("RAW_BACKEND_RESPONSE:", rawText);
+                }
                 errorDiv.textContent = 'Invalid email or password';
             }
         } catch (error) {
