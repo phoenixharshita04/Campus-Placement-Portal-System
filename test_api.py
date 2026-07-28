@@ -33,7 +33,7 @@ request('POST', '/auth/register', {
     "role": "STUDENT",
     "name": "Test Student",
     "rollNo": f"R{uuid.uuid4().hex[:6]}",
-    "department": "CSE",
+    "branch": "CSE",
     "cgpa": 8.0,
     "graduationYear": 2026
 })
@@ -83,7 +83,7 @@ job_data = {
     "testLink": "http://hackerrank.com/test"
 }
 job = request('POST', '/companies/jobs', data=job_data, token=company_token)
-job_id = job['job_id']
+job_id = job['id']
 print(f"Company posted job {job_id} with test details.")
 
 # 5. Apply as opted-out student (should fail)
