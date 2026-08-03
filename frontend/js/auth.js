@@ -1,4 +1,6 @@
-const API_URL = 'https://placement-portal-backend.onrender.com/api/auth';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+    ? 'http://localhost:8080/api/auth'
+    : 'https://placement-portal-backend.onrender.com/api/auth';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Check if user is already logged in
@@ -31,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('forgotForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        window.setButtonLoading(submitBtn, true);
         const email = document.getElementById('forgotEmail').value;
         const msgDiv = document.getElementById('forgotMessage');
         msgDiv.style.color = 'var(--text-secondary)';
@@ -54,6 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             msgDiv.style.color = 'var(--danger-color)';
             msgDiv.textContent = 'Connection error. Is the backend running?';
+        } finally {
+            window.setButtonLoading(submitBtn, false);
         }
     });
 
@@ -89,6 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Login Form Submit
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        window.setButtonLoading(submitBtn, true);
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
         const errorDiv = document.getElementById('loginError');
@@ -138,6 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Login request failed:", error);
             errorDiv.textContent = 'Connection error. Is the backend running?';
+        } finally {
+            window.setButtonLoading(submitBtn, false);
         }
     });
 
@@ -146,6 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if(registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            window.setButtonLoading(submitBtn, true);
             const errorDiv = document.getElementById('registerError');
             
             const payload = {
@@ -182,6 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 errorDiv.textContent = 'Connection error. Is the backend running?';
+            } finally {
+                window.setButtonLoading(submitBtn, false);
             }
         });
     }

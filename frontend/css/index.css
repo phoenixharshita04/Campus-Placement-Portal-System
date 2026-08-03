@@ -489,3 +489,116 @@ p {
   position: relative;
   z-index: 1;
 }
+
+/* --- Visual & UX Polish additions --- */
+
+/* Hover effects & Micro-interactions */
+.btn, .card, .glass-panel, .form-control, .sidebar-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn:active, .card:active {
+    transform: scale(0.97);
+}
+
+/* Button Loading States */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-top: -10px;
+    margin-left: -10px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #ffffff;
+    animation: spin 0.8s ease-in-out infinite;
+}
+
+body.dark-mode .btn-outline.btn-loading::after {
+    border-top-color: var(--primary-color);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Scroll Fade-in Animations */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Interactive Calculator Styles */
+.calculator-section {
+    margin-top: 60px;
+    padding: 40px;
+}
+
+.calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+    .calc-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.calc-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.calc-result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-radius: 10px;
+    background: var(--surface-color);
+    border-left: 4px solid var(--border-color);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    transition: all 0.3s ease;
+}
+
+.calc-result-item.eligible {
+    border-left-color: var(--success-color);
+}
+
+.calc-result-item.ineligible {
+    border-left-color: var(--danger-color);
+    opacity: 0.7;
+}
+
+.calc-status {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.calc-status.eligible {
+    color: var(--success-color);
+}
+
+.calc-status.ineligible {
+    color: var(--danger-color);
+}
+
