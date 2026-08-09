@@ -1,6 +1,6 @@
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
     ? 'http://localhost:8080/api'
-    : 'https://placement-portal-backend.onrender.com/api';
+    : 'https://campus-placement-portal-system.onrender.com/api';
 
 function getToken() {
     return localStorage.getItem('token');
@@ -35,7 +35,7 @@ async function apiCall(endpoint, method = 'GET', body = null) {
 
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-        
+
         const contentType = response.headers.get("content-type");
         let data;
         if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -43,7 +43,7 @@ async function apiCall(endpoint, method = 'GET', body = null) {
         } else {
             data = await response.text();
         }
-        
+
         if (!response.ok) {
             throw new Error(data.message || data || 'An error occurred');
         }

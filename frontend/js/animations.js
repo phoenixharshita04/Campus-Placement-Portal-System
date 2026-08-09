@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Deloitte', title: 'Associate Tech Consultant', minCgpa: 6.8, branches: ['ALL', 'CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE', 'CHE', 'AE', 'AI & DS', 'MTE', 'BT'] },
         { name: 'Tata Motors', title: 'Graduate Engineer Trainee (GET)', minCgpa: 6.5, branches: ['ME', 'EEE', 'MTE'] },
         { name: 'TCS Digital', title: 'Systems Engineer', minCgpa: 6.5, branches: ['ALL', 'CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE', 'CHE', 'AE', 'AI & DS', 'MTE', 'BT'] }
+        { name: 'Lala Company', title: 'Systems Engineer', minCgpa: 6.5, branches: ['ALL', 'CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE', 'CHE', 'AE', 'AI & DS', 'MTE', 'BT'] }
+        { name: 'Yadav Infotech', title: 'Meow Engineer', minCgpa: 6.5, branches: ['ALL', 'CSE',  'BT'] }
     ];
 
     function runCalculation() {
